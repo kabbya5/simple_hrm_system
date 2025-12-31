@@ -17,21 +17,37 @@ class EmployeeController extends Controller
 
     private $employeeRepo;
     private $skillRepo;
+    private $departmentRepo;
 
-    public function __construct(EmployeeRepository $employeeRepo,SkillRepository $skillRepo)
+    public function __construct(
+        EmployeeRepository $employeeRepo,
+        SkillRepository $skillRepo,
+        DepartmentRepository $departmentRepo
+    )
     {
         $this->employeeRepo = $employeeRepo;
         $this->skillRepo = $skillRepo;
+        $this->departmentRepo = $departmentRepo;
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try{
-            $employees = $this->employeeRepo->all();
-            return view('employees.index',compact('employees',));
+
+            $page = $request->page;
+            $department_id = $request->department_id;
+
+            $employees = $this->employeeRepo->all($department_id, $page);
+            
+            if($request->ajax()){
+                return view('employees._table',compact('employees'))->render();
+            }
+
+            $departments = $this->departmentRepo->all();
+            return view('employees.index',compact('employees','departments'));
         }catch(Exception $e){
             throw $e;
         }
@@ -40,12 +56,12 @@ class EmployeeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(DepartmentRepository $departmentRepo)
+    public function create()
     {
         try{
             $employee = new employee();
             $skills = $this->skillRepo->all();
-            $departments = $departmentRepo->all();
+            $departments = $this->departmentRepo->all();
             return view('employees.create',compact('employee', 'skills' ,  'departments'));
         }catch(Exception $e){
             throw $e;
@@ -85,12 +101,12 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Employee $employee, DepartmentRepository $departmentRepo)
+    public function edit(Employee $employee)
     {
         try{
             $employee->load('skills');
             $skills = $this->skillRepo->all();
-            $departments = $departmentRepo->all();
+            $departments = $this->departmentRepo->all();
             return view('employees.edit',compact('employee', 'skills' ,  'departments'));
         }catch(Exception $e){
             throw $e;

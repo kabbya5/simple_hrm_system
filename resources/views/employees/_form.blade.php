@@ -70,12 +70,11 @@
 
 <div class="mb-2">
     <label for=""> Email </label>
-    <input type="text" class="form-control @error('email') is-invalid @enderror"
-        value="{{old('email', $employee->email)}}" name="email">
+    <input type="text" class="form-control unique-input @error('email') is-invalid @enderror"
+        value="{{old('email', $employee->email)}}" name="email" data-model="Employee">
 
-    @error('email') 
-        <p class="text-danger"> {{$message}} </p>
-    @enderror 
+    
+    <p class="email-status">  </p>
 </div>
 
 <div class="mb-2">
@@ -83,9 +82,8 @@
     <input type="text" class="form-control @error('phone') is-invalid @enderror"
         value="{{old('phone', $employee->phone)}}" name="phone">
 
-    @error('phone') 
-        <p class="text-danger"> {{$message}} </p>
-    @enderror 
+    <p class="phone-status"> </p>
+
 </div>
 
 <div class="mb-2">

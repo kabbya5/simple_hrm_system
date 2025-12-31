@@ -27,7 +27,7 @@
     <div id="app">
         {{-- Notification Alert  --}}
 
-        <div id="alert-message" style="position:fiexed: top:10; right:10;z-index:999">
+        <div id="alert-message" style="position: fixed; top: 10px; right: 10px; z-index: 9999;"></div>
             
         </div>
 
@@ -40,18 +40,19 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('departments.index')}}"> Departments </a>
+                            <a class="nav-link {{request()->is('/') ? 'active' : ''}}" aria-current="page" href="/">Home</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{route('employees.index')}}"> Employees </a>
+                            <a class="nav-link {{request()->routeIs('employees.*') ? 'active' : ''}}" href="{{route('employees.index')}}"> Employees </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{route('skills.index')}}"> Skills </a>
+                            <a class="nav-link {{request()->routeIs('departments.*') ? 'active' : ''}}" href="{{route('departments.index')}}"> Departments </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{request()->routeIs('skills.*') ? 'active' : ''}}" href="{{route('skills.index')}}"> Skills </a>
                         </li>
 
                         @guest
@@ -131,23 +132,23 @@
                 }, 3000);
             }
 
-            $(document).ready(function() {
-                @if(session('success'))
-                    showNotification("{{ session('success') }}", 'success');
-                @endif
+            
+            @if(session('success'))
+                showMessage("{{ session('success') }}", 'success');
+            @endif
 
-                @if(session('error'))
-                    showNotification("{{ session('error') }}", 'error');
-                @endif
+            @if(session('error'))
+                showMessage("{{ session('error') }}", 'error');
+            @endif
 
-                @if(session('info'))
-                    showNotification("{{ session('info') }}", 'info');
-                @endif
+            @if(session('info'))
+                showMessage("{{ session('info') }}", 'info');
+            @endif
 
-                @if(session('warning'))
-                    showNotification("{{ session('warning') }}", 'warning');
-                @endif
-            });
+            @if(session('warning'))
+                showMessage("{{ session('warning') }}", 'warning');
+            @endif
+            
 
             //delete alert 
 
@@ -168,7 +169,7 @@
 
             //image input priview
 
-            $('.image-input').on('change', function(){
+            $('.file-input').on('change', function(){
 
                 const input = this;
 
@@ -182,6 +183,36 @@
                     reader.readAsDataURL(input.files[0]);
 
                 }
+            });
+
+            $('.unique-input').keyup(function(){
+                var $input = $(this);
+                var type = $input.attr('type');
+                var model = $input.data('model');
+                var value = $input.val();
+                var name = $input.attr('name');
+
+                var $status = $(`.${name}-status`);
+
+                $.ajax({
+                    url:"{{route('validate.unique')}}",
+                    type:"GET",
+                    data:{ type:type, model:model, value:value, name:name},
+
+                    success:function(res){
+                        $status.text(res.message);
+
+                        if(res.valid){
+                            $status.removeClass('text-danger').addClass('text-success');
+                            $input.removeClass('is-invalid').addClass('is-valid');
+                            $status.fadeIn(300).animate({top:'-5px'}, 150).animate({top:'0px'}, 150);
+                        }else{
+                            $status.removeClass('text-success').addClass('text-danger');
+                            $input.removeClass('is-valid').addClass('is-invalid');
+                            $status.fadeIn(300).animate({opacity:0.7}, 150).animate({opacity:1}, 150);
+                        }
+                    }
+                })
             })
         });
     </script>

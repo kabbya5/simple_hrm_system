@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class Department extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
     
     protected $fillable = ['name', 'slug', 'position'];
 

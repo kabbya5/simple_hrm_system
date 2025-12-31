@@ -6,46 +6,65 @@
             <a href="#" class="text-decoration-none"> Employees </a>
             <a href="{{route('employees.create')}}" class="text-decoration-none"> Create </a>
         </div>
+
         <div class="card-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col" class="text-start"> Full Name </th>
-                        <th scope="col" class="text-center"> Department </th>
-                        <th scope="col" class="text-left"> Email </th>
-                        <th scope="col" class="text-center"> Hire Date </th>
-                        <th scope="col" class="text-end"> Action </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($employees as $key => $employee)
-                        <tr>
-                            <th scope="row">{{$key+1}}</th>
-                            <td class="text-start">{{$employee->full_name}}</td>
-                            <td class="text-center">{{$employee->department->name}} </td>
-                            <td class="text-start">{{$employee->email}} </td>
-                            <td class="text-center">{{date('d/m/Y', strtotime($employee->hire_date))}} </td>
-                            <td class="d-flex justify-content-end">
-                                <a href="{{route('employees.edit', $employee->id)}}" class="btn btn-primary btn-sm"> Edit </a>
-                                <a href="{{route('employees.show', $employee->id)}}" class="btn btn-success btn-sm ms-2"> View </a>
-                                <form class="delete-form" action="{{route('employees.destroy', $employee->id)}}" method="POST">
-                                    @csrf
-                                    @method('delete')
 
-                                    <button type="submit" class="ms-2 btn btn-danger btn-sm"> Delete </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="employee-search-form">
+                <div class="mb-2 col-12 col-lg-3">
+                    <label for=""> Filter By Department </label>
 
-            <div class="mt-2">
-                {{$employees->links()}}
+                    <select type="text" class="form-control" name="search" id="filter-employee">
+                        <option value=""> Select Department </option>
+                        @foreach ($departments as $department)
+                            <option value="{{$department->id}}">{{$department->name}} </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- partials-table --}}
+            <div class="employee-table">
+                @include('employees._table')
             </div>
         </div>
     </div>
 </div>
 
+@endsection
+
+@section('js')
+    <script>
+        $(document).ready(function(){
+
+            function fetchEmployees(department_id, page = 1){
+                $.ajax({
+                    url:"{{route('employees.index')}}",
+                    type:"GET",
+                    data:{page:page, department_id:department_id},
+                    success:function(res){
+                        $('.employee-table').html(res);
+                    },
+                    error:function(xhr){
+                        alert(xhr.responseText);
+                    }
+                });
+            }
+
+            $('#filter-employee').on('change', function(){
+                var department_id = $(this).val();
+
+                fetchEmployees(department_id);
+            });
+
+            $(document).on('click', '.page-link', function(e){
+                e.preventDefault();
+
+                var department_id = $('#filter-employee').val();
+                var href = $(this).attr('href');            
+                var page = parseInt(href.split('page=')[1]); 
+
+                fetchEmployees(department_id, page);
+            });
+        });
+    </script>
 @endsection
