@@ -13,12 +13,24 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    @yield('header_links')
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div id="app">
+        {{-- Notification Alert  --}}
+
+        <div id="alert-message" style="position:fiexed: top:10; right:10;z-index:999">
+            
+        </div>
+
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/"> HRM </a>
@@ -83,6 +95,97 @@
         </main>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function(){
+
+            // alert message 
+
+            function showMessage(message, type='success'){
+                var colors = {
+                    success:'#4CAF50',
+                    error:'#f44336',
+                };
+
+                var $notification = $('<div></div>').text(message).css({
+                    'background-color': colors[type],
+                    'color': '#fff',
+                    'padding': '12px 20px',
+                    'margin-bottom': '10px',
+                    'border-radius': '5px',
+                    'box-shadow': '0 2px 6px rgba(0,0,0,0.2)',
+                    'min-width': '200px',
+                    'opacity': 0,
+                    'cursor': 'pointer'
+                });
+
+                $('#alert-message').append($notification);
+                $notification.animate({opacity:1, right:'0px'});
+
+                $notification.click(function() {
+                    $(this).fadeOut(300, function() { $(this).remove(); });
+                });
+
+                setTimeout(function() {
+                    $notification.fadeOut(500, function() { $(this).remove(); });
+                }, 3000);
+            }
+
+            $(document).ready(function() {
+                @if(session('success'))
+                    showNotification("{{ session('success') }}", 'success');
+                @endif
+
+                @if(session('error'))
+                    showNotification("{{ session('error') }}", 'error');
+                @endif
+
+                @if(session('info'))
+                    showNotification("{{ session('info') }}", 'info');
+                @endif
+
+                @if(session('warning'))
+                    showNotification("{{ session('warning') }}", 'warning');
+                @endif
+            });
+
+            //delete alert 
+
+            $('.delete-form').on('submit', function (e) {
+                e.preventDefault();
+
+                if (confirm('Do you want to delete this data?')) {
+                    this.submit();
+                }
+            });
+
+            // select 2 
+            $('.select2').select2({
+                placeholder: "Select skills",
+                allowClear: true,
+                width: '100%'
+            });
+
+            //image input priview
+
+            $('.image-input').on('change', function(){
+
+                const input = this;
+
+                if(input.files && input.files[0]){
+                    const reader = new FileReader();
+
+                    reader.onload = function(e){
+                        $(input).closest('.d-flex').find('.image-preview').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+
+                }
+            })
+        });
+    </script>
+
     @yield('js')
 </body>
 </html>

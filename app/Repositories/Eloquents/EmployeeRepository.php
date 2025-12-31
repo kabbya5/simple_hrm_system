@@ -8,7 +8,7 @@ use App\Repositories\Interfaces\EmployeeRepositoryInterface;
 class EmployeeRepository implements EmployeeRepositoryInterface
 {
     public function all(){
-        return Employee::latest()->paginate(20);
+        return Employee::with('department')->latest()->paginate(20);
     }
     
     public function store(array $data): Employee

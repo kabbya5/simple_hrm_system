@@ -19,12 +19,46 @@
 </div>
 
 <div class="mb-2">
+    <label for=""> Dipartment </label>
+    <select  class="form-control @error('department_id') is-invalid @enderror"
+         name="department_id">
+
+        <option value=""> Select </option>
+        @foreach ($departments as $department)
+            <option value="{{$department->id}}" {{old('department_id', $employee->department_id) == $department->id ? 'selected' : ''}}> {{$department->name}}</option>
+        @endforeach
+    </select>
+
+    @error('department_id') 
+        <p class="text-danger"> {{$message}} </p>
+    @enderror 
+</div>
+
+<div class="mb-2">
+    <label for=""> Image </label>
+
+    <div class="d-flex items-center">
+        <input type="file" class="form-control image-input @error('image') is-invalid @enderror"
+        value="{{old('image', $employee->last_name)}}" name="image">
+
+        <img src="{{asset('storage/' .$employee->image_path)}}" alt="" class="image-preview form-control" style="height:38px; width:60px;">
+
+    </div>
+
+    @error('image') 
+        <p class="text-danger"> {{$message}} </p>
+    @enderror 
+</div>
+
+
+<div class="mb-2">
     <label for=""> Skills </label>
-    <select class="form-control select2 @error('skills') is-invalid @enderror"
+    <select class="form-select select2 @error('skills') is-invalid @enderror"
          name="skills[]" multiple>
 
         @foreach ($skills as $skill)
-             <option value="{{$skill->id}}"> {{$skill->name}} </option>
+             <option value="{{$skill->id}}" 
+                {{in_array($skill->id, old('skills', $employee->skills->pluck('id')->toArray())) ? 'selected' : ''}}> {{$skill->name}} </option>
         @endforeach
         
     </select>

@@ -11,10 +11,9 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col" class="text-start"> Name </th>
+                        <th scope="col" class="text-start"> Full Name </th>
                         <th scope="col" class="text-center"> Department </th>
                         <th scope="col" class="text-left"> Email </th>
-                        <th scope="col" class="text-center"> Date Of Birth </th>
                         <th scope="col" class="text-center"> Hire Date </th>
                         <th scope="col" class="text-end"> Action </th>
                     </tr>
@@ -23,11 +22,14 @@
                     @foreach ($employees as $key => $employee)
                         <tr>
                             <th scope="row">{{$key+1}}</th>
-                            <td class="text-start">{{$department->name}}</td>
-                            <td class="text-center">{{$department->position}} </td>
+                            <td class="text-start">{{$employee->full_name}}</td>
+                            <td class="text-center">{{$employee->department->name}} </td>
+                            <td class="text-start">{{$employee->email}} </td>
+                            <td class="text-center">{{date('d/m/Y', strtotime($employee->hire_date))}} </td>
                             <td class="d-flex justify-content-end">
-                                <a href="{{route('departments.edit', $department->slug)}}" class="btn btn-primary btn-sm"> Edit </a>
-                                <form class="delete-form" action="{{route('departments.destroy', $department->slug)}}" method="POST">
+                                <a href="{{route('employees.edit', $employee->id)}}" class="btn btn-primary btn-sm"> Edit </a>
+                                <a href="{{route('employees.show', $employee->id)}}" class="btn btn-success btn-sm ms-2"> View </a>
+                                <form class="delete-form" action="{{route('employees.destroy', $employee->id)}}" method="POST">
                                     @csrf
                                     @method('delete')
 

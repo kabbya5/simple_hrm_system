@@ -4,13 +4,13 @@
     <div class="card col-6">
         <div class="card-header d-flex justify-content-between">
             <a href="#" class="text-decoration-none"> Edit </a>
-            <a href="{{route('departments.index')}}" class="text-decoration-none"> Departments </a>
+            <a href="{{route('employees.index')}}" class="text-decoration-none"> Employees </a>
         </div>
         <div class="card-body">
-            <form action="{{route('departments.update', $department->slug)}}" method="POST">
+            <form action="{{route('employees.update', $employee->id)}}" method="POST">
                 @method('PUT')
                 @csrf
-                @include('departments._form', ['department' => $department, 'button_text' => 'Update'])
+                @include('employees._form', ['employee' => $employee, 'button_text' => 'Update'])
             </form>
         </div>
     </div>

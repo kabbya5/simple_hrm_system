@@ -11,7 +11,7 @@ class EmployeeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,25 @@ class EmployeeRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
+        $rule = [
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,web',
+            'first_name' => 'required|min:2|max:200',
+            'last_name' => 'required|min:3|max:200',
+            'department_id' => 'required|integer',
+            'skills' => 'required|array',
+            'email' => 'required|unique:employees,email',
+            'phone' => 'nullable|unique:employees,phone',
+            'date_of_birth' => 'nullable|date',
+            'hire_date' => 'nullable|date',
         ];
+
+        switch ($this->method()){
+            case "PUT":
+            case "PATCH":
+                $rule['email'] = 'required|unique:employees,email,' .$this->employee->id;
+                $rule['phone'] = 'nullable|unique:employees,phone,' .$this->employee->id;
+        }        
+
+        return $rule;
     }
 }
